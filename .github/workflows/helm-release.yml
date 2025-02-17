@@ -37,3 +37,12 @@ jobs:
           charts_dir: "."
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Update Release Notes
+        run: |
+          TAG_NAME=$(git describe --tags --abbrev=0)  # 获取最新的 tag
+          gh release edit "$TAG_NAME" \
+            --generate-notes \
+            --repo $GITHUB_REPOSITORY
+        env:
+          GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
