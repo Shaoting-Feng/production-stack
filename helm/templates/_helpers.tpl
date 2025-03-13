@@ -99,14 +99,22 @@ requests:
   memory: {{ required "Value 'modelSpec.requestMemory' must be defined !" ($modelSpec.requestMemory | quote) }}
   cpu: {{ required "Value 'modelSpec.requestCPU' must be defined !" ($modelSpec.requestCPU | quote) }}
   {{- if (gt (int $modelSpec.requestGPU) 0) }}
-  nvidia.com/gpu: {{ required "Value 'modelSpec.requestGPU' must be defined !" (index $modelSpec.requestGPU | quote) }}
+  {{- $gpuType := default "nvidia.com/gpu" $modelSpec.requestGPUType }}
+  {{ $gpuType }}: {{ required "Value 'modelSpec.requestGPU' must be defined !" (index $modelSpec.requestGPU | quote) }}
   {{- end }}
+{{- if or (hasKey $modelSpec "limitMemory") (hasKey $modelSpec "limitCPU") (gt (int $modelSpec.requestGPU) 0) }}
 limits:
-  memory: {{ required "Value 'modelSpec.requestMemory' must be defined !" ($modelSpec.requestMemory | quote) }}
-  cpu: {{ required "Value 'modelSpec.requestCPU' must be defined !" ($modelSpec.requestCPU | quote) }}
-  {{- if (gt (int $modelSpec.requestGPU) 0) }}
-  nvidia.com/gpu: {{ required "Value 'modelSpec.requestGPU' must be defined !" (index $modelSpec.requestGPU | quote) }}
+  {{- if (hasKey $modelSpec "limitMemory") }}
+  memory: {{ $modelSpec.limitMemory | quote }}
   {{- end }}
+  {{- if (hasKey $modelSpec "limitCPU") }}
+  cpu: {{ $modelSpec.limitCPU | quote }}
+  {{- end }}
+  {{- if (gt (int $modelSpec.requestGPU) 0) }}
+  {{- $gpuType := default "nvidia.com/gpu" $modelSpec.requestGPUType }}
+  {{ $gpuType }}: {{ required "Value 'modelSpec.requestGPU' must be defined !" (index $modelSpec.requestGPU | quote) }}
+  {{- end }}
+{{- end }}
 {{- end }}
 
 
@@ -129,6 +137,15 @@ limits:
 {{- end }}
 
 {{/*
+  Define labels for cache server and its service
+*/}}
+{{- define "chart.cacheserverLabels" -}}
+{{-   with .Values.cacheserverSpec.labels -}}
+{{      toYaml . }}
+{{-   end }}
+{{- end }}
+
+{{/*
   Define helper function to convert labels to a comma separated list
 */}}
 {{- define "labels.toCommaSeparatedList" -}}
@@ -139,4 +156,12 @@ limits:
   {{ $key }}={{ $value }}
   {{- $result = "," -}}
 {{- end -}}
+{{- end -}}
+
+
+{{/*
+  Define helper function to format remote cache url
+*/}}
+{{- define "cacheserver.formatRemoteUrl" -}}
+lm://{{ .service_name }}:{{ .port }}
 {{- end -}}
