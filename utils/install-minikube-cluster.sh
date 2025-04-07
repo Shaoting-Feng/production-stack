@@ -60,6 +60,7 @@ if [ "$GPU_AVAILABLE" = true ]; then
     echo "Configuring Docker runtime for GPU support..."
     if sudo "$NVIDIA_CTK_PATH" runtime configure --runtime=docker; then
       echo "Restarting Docker to apply changes..."
+      # sudo usermod -aG docker $USER && newgrp docker
       sudo systemctl restart docker
       echo "Docker runtime configured successfully."
     else
