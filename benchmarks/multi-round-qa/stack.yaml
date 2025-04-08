@@ -15,9 +15,9 @@ servingEngineSpec:
     vllmConfig:
       enableChunkedPrefill: false
       enablePrefixCaching: false
-      maxModelLen: 30000
+      maxModelLen: 20000
       dtype: "bfloat16"
-      extraArgs: ["--disable-log-requests", "--swap-space", 0, "--gpu-memory-utilization", "0.8"]
+      extraArgs: ["--disable-log-requests", "--swap-space", 0, "--gpu-memory-utilization", "0.95"]
       tensorParallelSize: 2
     lmcacheConfig:
       enabled: true
