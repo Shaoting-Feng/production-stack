@@ -4,7 +4,7 @@ with open('ShareGPT.json', 'r') as f:
     data = json.load(f)
 
 # Process only the first 200 entries and build the "input" and "output_length" fields.
-for entry in data[:2000]:
+for entry in data[:1000]:
     conversation = entry.get("conversations", [])
     cumulative_text = ""
     human_count = 0
@@ -32,7 +32,7 @@ for entry in data[:2000]:
 
 # Create a new list where each entry only contains the desired fields.
 new_data = []
-for entry in data[:2000]:
+for entry in data[:1000]:
     new_entry = {}
     # Keep num_round if it exists.
     if "num_round" in entry:

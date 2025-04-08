@@ -33,7 +33,7 @@ run_benchmark() {
         --base-url "$BASE_URL" \
         --output "$2" \
         --log-interval 30 \
-        --time 100 \
+        --time 10000000
 
     sleep 10
 }
@@ -41,7 +41,7 @@ run_benchmark() {
 KEY=$3
 
 # Run benchmarks for different QPS values
-QPS_VALUES=(10 5 4 3 2.5 2 1) # Set your QPS
+QPS_VALUES=(7) # Set your QPS
 
 # Run benchmarks for the determined QPS values
 for qps in "${QPS_VALUES[@]}"; do

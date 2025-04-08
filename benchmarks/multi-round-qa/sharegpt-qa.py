@@ -14,9 +14,10 @@ logger = init_logger(__name__, logging.INFO)
 
 import json
 
-with open("round_robin_2000.json", "r") as file:
+with open("round_robin_1000_5.json", "r") as file:
     mooncake_data = json.load(file)
 print(f"Number of entries: {len(mooncake_data)}")
+STOP = False
 
 @dataclass
 class WorkloadConfig:
@@ -253,7 +254,8 @@ class UserSession:
         logger.debug(
             f"User {self.user_config.user_id} issues request {self.question_id}"
         )
-        max_tokens = mooncake_data[self.mooncake_id]['output_length']
+        # max_tokens = mooncake_data[self.mooncake_id]['output_length']
+        max_tokens = 1
         request_executor.launch_request(
             self.chat_history,
             max_tokens,
@@ -407,12 +409,16 @@ class UserSessionManager:
         if self.start_time is None:
             self.start_time = timestamp
 
-        if timestamp - self.initial_time >= self.mooncake_request_to_send / self.workload_config.qps:
-            self._create_user_session(self.mooncake_request_to_send)
-            self.last_user_join = timestamp
-            logger.info(f"Joined a new user {self.user_id}, "
-                        f"now active users: {len(self.sessions)}")
-            self.mooncake_request_to_send += 1
+        if self.mooncake_request_to_send < len(mooncake_data):
+            if timestamp - self.initial_time >= self.mooncake_request_to_send / self.workload_config.qps:
+                self._create_user_session(self.mooncake_request_to_send)
+                self.last_user_join = timestamp
+                logger.info(f"Joined a new user {self.user_id}, "
+                            f"now active users: {len(self.sessions)}")
+                self.mooncake_request_to_send += 1
+        else:
+            global STOP
+            STOP = True
 
         for session in self.sessions:
             session.step(timestamp, executor)
@@ -634,7 +640,7 @@ def main():
     num_steps = 0
     last_summary_time = start_time
     try:
-        while True:
+        while not STOP:
             num_steps += 1
             manager.step(time.time(), executor)
             time.sleep(step_interval)

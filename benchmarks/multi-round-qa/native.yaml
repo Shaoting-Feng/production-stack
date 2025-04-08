@@ -2,12 +2,12 @@ servingEngineSpec:
   runtimeClassName: ""
   modelSpec:
   - name: "llama3"
-    repository: "vllm/vllm-openai"
-    tag: "latest"
+    repository: "lmcache/vllm-openai"
+    tag: "2025-02-28-v0.7.3"
     modelURL: "meta-llama/Llama-3.1-70B-Instruct"
     replicaCount: 1
     requestCPU: 10
-    requestMemory: "250Gi"
+    requestMemory: "50Gi"
     requestGPU: 2
     pvcStorage: "50Gi"
     pvcAccessMode:
@@ -15,7 +15,7 @@ servingEngineSpec:
     vllmConfig:
       enableChunkedPrefill: false
       enablePrefixCaching: true
-      maxModelLen: 30000
+      maxModelLen: 20000
       dtype: "bfloat16"
       extraArgs: ["--disable-log-requests", "--swap-space", 0, "--gpu-memory-utilization", "0.95"]
       tensorParallelSize: 2

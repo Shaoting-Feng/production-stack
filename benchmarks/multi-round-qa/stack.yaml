@@ -7,7 +7,7 @@ servingEngineSpec:
     modelURL: "meta-llama/Llama-3.1-70B-Instruct"
     replicaCount: 1
     requestCPU: 10
-    requestMemory: "250Gi"
+    requestMemory: "150Gi"
     requestGPU: 2
     pvcStorage: "50Gi"
     pvcAccessMode:
@@ -21,7 +21,7 @@ servingEngineSpec:
       tensorParallelSize: 2
     lmcacheConfig:
       enabled: true
-      cpuOffloadingBufferSize: "200"
+      cpuOffloadingBufferSize: "120"
     hf_token: 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
     shmSize: "20Gi"
 
